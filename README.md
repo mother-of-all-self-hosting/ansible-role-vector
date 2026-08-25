@@ -1,5 +1,6 @@
 <!--
 SPDX-FileCopyrightText: 2025 spatterlight
+SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -34,3 +35,17 @@ just prek-install-git-pre-commit-hook
 This role supports [Molecule](https://docs.ansible.com/projects/molecule/), an Ansible testing framework designed for developing and testing Ansible collections, playbooks, and roles.
 
 Refer to [this page](./molecule/README.md) for details about how to utilize it.
+
+### Releases
+
+Releases are cut automatically. Every push to the default branch runs [`bin/compute-next-tag.sh`](./bin/compute-next-tag.sh), which derives the tag from `vector_version` in [`defaults/main.yml`](defaults/main.yml) and the tags that already exist:
+
+- a Vector version that has never been released starts a fresh release counter (`v0.57.0-0`)
+- any later change to `defaults/`, `meta/`, `tasks/` or `templates/` increments it (`v0.57.0-1`)
+- a change that only touches documentation or CI configuration is not released at all
+
+Because the tag is derived from the state of the role rather than from commit messages, the result does not depend on the order in which pull requests get merged. [`bin/test-compute-next-tag.sh`](./bin/test-compute-next-tag.sh) exercises this against throwaway repositories and runs as a pre-commit hook whenever the tagger or `defaults/main.yml` changes.
+
+### Version updates
+
+[Renovate](https://docs.renovatebot.com/) proposes Vector version bumps by reading [`.github/renovate.json`](./.github/renovate.json). Note that `timberio/vector` publishes **no** plain `X.Y.Z` tags — every tag carries a distribution suffix (`-debian`, `-alpine`, `-distroless-libc`, `-distroless-static`) — so the configuration recovers the version from the `-debian` tags that `vector_container_image_tag` composes. Changing the default of `vector_container_image_distribution` means changing that rule too, or Renovate goes blind again.
