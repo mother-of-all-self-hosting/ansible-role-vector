@@ -257,7 +257,7 @@
           time(s) by `Restart=always`, so the container is not staying up.
         success_msg: "The Vector service has stayed up since it was started"
 
-    - name: Show Vector verification summary
+    - name: Show the Vector verification summary
       ansible.builtin.debug:
         msg:
           - "Vector systemd: {{ vector_service_final.status.ActiveState }} (restarts: {{ vector_service_final.status.NRestarts }})"
