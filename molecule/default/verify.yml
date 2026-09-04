@@ -52,13 +52,11 @@
       changed_when: false
 
     # The trailing space matters: without it `0.5` would satisfy a `0.56.0` binary.
-    - name: Assert the running Vector is the version defaults/main.yml asks for
+    - name: Assert the running Vector is the version this role installs
       ansible.builtin.assert:
-        that: vector_reported_version.stdout.startswith('vector ' ~ vector_role_defaults.vector_version ~ ' ')
-        fail_msg: >-
-          defaults/main.yml asks for Vector {{ vector_role_defaults.vector_version }},
-          but the running container reports `{{ vector_reported_version.stdout }}`.
-        success_msg: "The running Vector reports version {{ vector_role_defaults.vector_version }}"
+        that: vector_reported_version.stdout.startswith('vector ' ~ vector_defaults.vector_version ~ ' ')
+        fail_msg: "Vector reports {{ vector_reported_version.stdout | default('none') }}, expected {{ vector_defaults.vector_version }}"
+        success_msg: "Vector reports {{ vector_reported_version.stdout }}"
 
     ########################################################################
     #                                                                      #
