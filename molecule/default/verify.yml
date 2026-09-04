@@ -9,13 +9,13 @@
   become: true
   gather_facts: false
   tasks:
-    # Only leaf literals are read out of here - `vector_version` is the one
-    # Renovate edits, and asserting the running binary against it is what makes a
-    # version bump a testable change rather than a string edit.
-    - name: Read the Vector role defaults
+    # The role is not included in this playbook, so its defaults are not in
+    # scope. Reading defaults/main.yml directly ties the version assertion
+    # below.
+    - name: Load the role defaults
       ansible.builtin.include_vars:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
-        name: vector_role_defaults
+        name: vector_defaults
 
     - name: Wait for Vector service to become active (up to 180s)
       ansible.builtin.systemd:
