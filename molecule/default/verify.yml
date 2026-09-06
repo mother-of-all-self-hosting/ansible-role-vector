@@ -45,7 +45,7 @@
 
     # The image carries no version label, and Vector's API is gRPC-only apart from
     # `/health`, so the binary inside the running container is the version surface.
-    - name: Retrieve the version reported by the running Vector binary
+    - name: Query the version of the running Vector
       ansible.builtin.command:
         cmd: docker exec vector /usr/bin/vector --version
       register: vector_reported_version
