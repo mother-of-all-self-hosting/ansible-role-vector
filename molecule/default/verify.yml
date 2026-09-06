@@ -186,12 +186,12 @@
     - name: Inspect the Vector container
       ansible.builtin.command:
         cmd: docker inspect vector
-      register: vector_container_inspection
+      register: vector_container_raw
       changed_when: false
 
     - name: Record the Vector container's inspection result
       ansible.builtin.set_fact:
-        vector_container: "{{ (vector_container_inspection.stdout | from_json)[0] }}"
+        vector_container: "{{ (vector_container_raw.stdout | from_json)[0] }}"
 
     - name: Assert the Vector container keeps the hardened non-root posture
       ansible.builtin.assert:
