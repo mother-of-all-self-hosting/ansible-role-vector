@@ -9,6 +9,8 @@
   become: true
   gather_facts: false
   tasks:
+    - name: Verify that Vector works
+      block:
     # The role is not included in this playbook, so its defaults are not in
     # scope. Reading defaults/main.yml directly ties the version assertion
     # below.
@@ -269,3 +271,19 @@
           - "Vector API on port {{ vector_container_api_port }}: HTTP {{ vector_health_endpoint.status }}"
           - "Seeded event out of the sink: {{ vector_seed_event.stdout }}"
           - "Live event out of the sink: {{ vector_live_event.stdout }}"
+
+      rescue:
+        # Whatever went wrong, the reason is almost always in the systemd service log.
+        - name: Retrieve the Vector systemd service log
+          ansible.builtin.command:
+            cmd: journalctl --no-pager --output=cat --unit=vector.service
+          register: vector_service_log
+          changed_when: false
+
+        - name: Show the Vector systemd service log
+          ansible.builtin.debug:
+            var: vector_service_log.stdout_lines
+
+        - name: Fail because verification did not pass
+          ansible.builtin.fail:
+            msg: "Vector verification failed. The systemd service log is printed above."
