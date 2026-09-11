@@ -8,6 +8,11 @@
   hosts: all
   become: true
   gather_facts: false
+
+  vars:
+    vector_verify_units:
+      - vector.service
+
   tasks:
     - name: Verify that Vector works
       block:
@@ -19,13 +24,14 @@
             file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
             name: vector_defaults
 
-        - name: Wait for the Vector systemd service to become active (up to 180s)
+        - name: Wait for the Vector systemd services to become active (up to 180s each)
           ansible.builtin.systemd_service:
-            name: vector.service
-          register: vector_service
-          until: vector_service.status.ActiveState == 'active'
+            name: "{{ item }}"
+          register: vector_services
+          until: vector_services.status.ActiveState == 'active'
           retries: 36
           delay: 5
+          loop: "{{ vector_verify_units }}"
           # So that giving up is reported by the assertion below rather than as a
           # wall of systemd unit properties.
           failed_when: false
@@ -33,17 +39,20 @@
         # `Restart=always` in the systemd unit means that even a container which crashes
         # and gets restarted reads as active here, so this is a precondition rather than
         # a result.
-        - name: Assert the Vector systemd service is active
+        - name: Assert the Vector systemd services are active
           ansible.builtin.assert:
-            that: vector_service.status.ActiveState == 'active'
-            fail_msg: "vector.service is not active ({{ vector_service.status.ActiveState }})"
-            success_msg: "vector.service is active"
+            that: vector_services.results | map(attribute='status.ActiveState') | unique | list == ['active']
+            fail_msg: >-
+              Not every service is active:
+              {{ dict(vector_verify_units | zip(vector_services.results | map(attribute='status.ActiveState'))) }}
+            success_msg: "Every systemd service is active"
 
-        - name: Retrieve the Vector systemd service log for debugging
+        - name: Retrieve the Vector systemd services log for debugging
           when: vector_debug_service_enabled | bool
           ansible.builtin.command:
-            cmd: journalctl --no-pager --output=cat --unit=vector.service
+            cmd: "journalctl --no-pager --output=cat --unit={{ item }}"
           changed_when: false
+          loop: "{{ vector_verify_units }}"
 
         ########################################################################
         #                                                                      #
@@ -266,7 +275,7 @@
         - name: Show the Vector verification summary
           ansible.builtin.debug:
             msg:
-              - "Vector systemd: {{ vector_service_final.status.ActiveState }} (restarts: {{ vector_service_final.status.NRestarts }})"
+              - "Vector systemd: {% for unit, state in vector_verify_units | zip(vector_services.results | map(attribute='status.ActiveState')) %}{{ unit }} ({{ state }}){% if not loop.last %}, {% endif %}{% endfor %}"
               - "Vector version: {{ vector_reported_version.stdout }}"
               - "Vector API on port {{ vector_container_api_port }}: HTTP {{ vector_health_endpoint.status }}"
               - "Seeded event out of the sink: {{ vector_seed_event.stdout }}"
