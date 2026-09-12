@@ -98,21 +98,24 @@
         # 8687 instead, so a /health answer on 8687 can only be explained by the role
         # having carried `vector_container_api_port` into both the rendered
         # configuration and the container's port publish.
-        - name: Wait for the Vector API to answer on the configured port (up to 300s)
+        - name: Wait for Vector to report itself healthy (up to 180s)
           ansible.builtin.uri:
             url: "http://127.0.0.1:{{ vector_container_api_port }}/health"
             method: GET
             status_code: [200]
-          register: vector_health_endpoint
-          until: vector_health_endpoint.status == 200
-          retries: 60
+          register: vector_health
+          until: vector_health.status == 200
+          retries: 36
           delay: 5
+          # So that giving up is reported by the assertion below rather than as a
+          # wall of systemd unit properties.
+          failed_when: false
 
-        - name: Assert the Vector API reports itself healthy
+        - name: Assert Vector reports itself healthy
           ansible.builtin.assert:
-            that: vector_health_endpoint.json.ok | bool
-            fail_msg: "Vector's /health endpoint did not report ok ({{ vector_health_endpoint.json | default('no body') }})"
-            success_msg: "Vector's /health endpoint reports ok"
+            that: vector_health.json.ok | bool
+            fail_msg: "Vector did not report itself healthy: {{ vector_health.json | default('no response') }}"
+            success_msg: "Vector reports itself healthy"
 
         - name: Probe the API port Vector would have used had the role not configured one
           ansible.builtin.uri:
@@ -277,7 +280,7 @@
             msg:
               - "Vector systemd: {% for unit, state in vector_verify_units | zip(vector_services.results | map(attribute='status.ActiveState')) %}{{ unit }} ({{ state }}){% if not loop.last %}, {% endif %}{% endfor %}"
               - "Vector version: {{ vector_reported_version.stdout }}"
-              - "Vector API on port {{ vector_container_api_port }}: HTTP {{ vector_health_endpoint.status }}"
+              - "Vector API on port {{ vector_container_api_port }}: HTTP {{ vector_health.status }}"
               - "Seeded event out of the sink: {{ vector_seed_event.stdout }}"
               - "Live event out of the sink: {{ vector_live_event.stdout }}"
 
