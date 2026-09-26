@@ -321,6 +321,12 @@ vector_varlog_source_config:
     include: "{{ vector_varlog_source_include }}"
     fingerprint: "{{ vector_varlog_source_fingerprint }}"
 
+########################################################################
+#                                                                      #
+# /Built-in host-log sources (journald / varlog)                       #
+#                                                                      #
+########################################################################
+
 # Default Vector configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
