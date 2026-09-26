@@ -52,7 +52,7 @@ vector_container_network_deletion_enabled: true
 # Can be used to access the API/playground directly (bypassing Traefik).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8686"), or empty string to not expose.
-vector_container_api_bind_port: ""
+vector_container_api_host_bind_port: ""
 
 # The port Vector's API listens on inside the container.
 vector_container_api_port: 8686
