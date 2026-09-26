@@ -101,7 +101,7 @@ vector_container_labels_traefik_rule: "Host(`{{ vector_container_labels_traefik_
 vector_container_labels_traefik_priority: 0
 vector_container_labels_traefik_entrypoints: web-secure
 vector_container_labels_traefik_tls: "{{ vector_container_labels_traefik_entrypoints != 'web' }}"
-vector_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+vector_container_labels_traefik_tls_certResolver: default # noqa var-naming
 
 # Controls whether a Traefik basic-auth middleware is attached to the API router.
 # As Vector's API has no authentication of its own, enabling basic auth is strongly
@@ -267,8 +267,8 @@ vector_journald_source_enabled: false
 vector_journald_source_host_path: /var/log/journal
 vector_journald_source_in_container_path: /journal
 vector_journald_source_additional_volumes:
-  - {type: bind, src: "{{ vector_journald_source_host_path }}", dst: "{{ vector_journald_source_in_container_path }}", options: readonly}
-  - {type: bind, src: /etc/machine-id, dst: /etc/machine-id, options: readonly}
+  - { type: bind, src: "{{ vector_journald_source_host_path }}", dst: "{{ vector_journald_source_in_container_path }}", options: readonly }
+  - { type: bind, src: /etc/machine-id, dst: /etc/machine-id, options: readonly }
 # Ship only entries from the current boot (plus all new ones as they arrive).
 #
 # Note: Vector rejects `current_boot_only: false` on systemd versions 250-257
@@ -309,7 +309,7 @@ vector_varlog_source_enabled: false
 vector_varlog_source_host_path: /var/log
 vector_varlog_source_in_container_path: /varlog
 vector_varlog_source_additional_volumes:
-  - {type: bind, src: "{{ vector_varlog_source_host_path }}", dst: "{{ vector_varlog_source_in_container_path }}", options: readonly}
+  - { type: bind, src: "{{ vector_varlog_source_host_path }}", dst: "{{ vector_varlog_source_in_container_path }}", options: readonly }
 vector_varlog_source_include:
   - "{{ vector_varlog_source_in_container_path }}/**/*.log"
 # Identify files by inode. Set to `checksum` for Vector's default.
