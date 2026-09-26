@@ -45,6 +45,13 @@
 - name: Validate Vector Traefik configuration
   when: vector_container_labels_traefik_enabled | bool
   block:
+    - name: (Deprecation) Catch and report Vector labels for Traefik in the old string format
+      ansible.builtin.fail:
+        msg: >-
+          `vector_container_labels_additional_labels` now require a list of strings.
+          Replace `vector_container_labels_additional_labels: |` with `vector_container_labels_additional_labels_custom:` and make each label a list item.
+      when: "vector_container_labels_additional_labels | default([]) is string"
+
     - name: Fail if Traefik settings required for Vector are not defined
       ansible.builtin.fail:
         msg: >-

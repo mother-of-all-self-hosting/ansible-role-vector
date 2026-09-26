@@ -44,4 +44,6 @@ traefik.http.routers.{{ vector_identifier }}.tls.certResolver={{ vector_containe
 traefik.http.services.{{ vector_identifier }}.loadbalancer.server.port={{ vector_container_api_port }}
 {% endif %}
 
-{{ vector_container_labels_additional_labels }}
+{% for arg in vector_container_labels_additional_labels %}
+{{ arg }}
+{% endfor %}
