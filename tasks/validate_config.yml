@@ -12,7 +12,7 @@
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
-    - { "old": "vector_distro", "new": "vector_distro_variant" }
+    - { "old": "vector_container_image_distribution", "new": "vector_distro_variant" }
 
 - name: Fail if required Vector settings not defined
   ansible.builtin.fail:
