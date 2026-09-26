@@ -104,7 +104,9 @@ vector_container_labels_additional_labels_auto: []
 vector_container_labels_additional_labels_custom: []
 
 # A list of extra arguments to pass to the container (`docker create` command)
-vector_container_extra_arguments: []
+vector_container_extra_arguments: "{{ vector_container_extra_arguments_auto + vector_container_extra_arguments_custom }}"
+vector_container_extra_arguments_auto: []
+vector_container_extra_arguments_custom: []
 
 # A list of extra arguments to pass to the process inside the container
 # Example: ['--SOME_ARGUMENT']
