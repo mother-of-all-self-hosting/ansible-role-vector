@@ -48,7 +48,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       {{ arg }} \
       {% endfor %}
       {{ vector_container_image }} \
-      --config /etc/vector/vector.yaml
+      {% for arg in vector_process_extra_arguments %}
+      {{ arg }} \
+      {% endfor %}
 
 {% for network in vector_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ vector_identifier }}

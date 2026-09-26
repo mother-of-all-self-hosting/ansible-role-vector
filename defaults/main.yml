@@ -159,6 +159,13 @@ vector_container_additional_volumes_custom: []
 # A list of extra arguments to pass to the container
 vector_container_extra_arguments: []
 
+# A list of extra arguments to pass to the process inside the container
+# Example: ['--SOME_ARGUMENT']
+vector_process_extra_arguments: "{{ vector_process_extra_arguments_auto + vector_process_extra_arguments_custom }}"
+vector_process_extra_arguments_auto:
+  - --config /etc/vector/vector.yaml
+vector_process_extra_arguments_custom: []
+
 # The directory (inside the container) where Vector persists state and buffers data.
 vector_data_dir: /var/lib/vector
 
