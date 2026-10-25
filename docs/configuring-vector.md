@@ -109,7 +109,7 @@ To connect to a remote Loki instance, set `endpoint` to its public hostname (e.g
 
 You can then add Loki as a datasource in Grafana.
 
-💡 If both Loki and Grafana are set up with the MASH playbook, refer to [this section](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/grafana.md#integrating-with-a-local-loki-instance) on the Grafana documentation page for details about integrating with a local Loki instance.
+💡 If both Loki and Grafana are set up with the MASH playbook, refer to [this section](https://github.com/mother-of-all-self-hosting/ansible-role-grafana/blob/main/docs/configuring-grafana.md#integrating-with-a-local-loki-instance) on the Grafana role's documentation for details about integrating with a local Loki instance.
 
 ### Exposing metrics to Prometheus
 
@@ -138,7 +138,7 @@ prometheus_config_scrape_configs_additional:
           - "{{ vector_identifier }}:9598"
 ```
 
-💡 If both Prometheus is set up with the MASH playbook, refer to [this section](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/prometheus.md#scraping-other-exporter-services) on the Prometheus documentation page for more details.
+💡 If both Prometheus is set up with the MASH playbook, refer to [this section](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus/blob/main/docs/configuring-prometheus.md#scraping-other-exporter-services) on the Prometheus role's documentation for more details.
 
 ### Exposing the API (optional)
 
